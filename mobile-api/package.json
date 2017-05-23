@@ -15,5 +15,17 @@
   "bugs": {
     "url": "https://github.com/syuria27/third-project/issues"
   },
-  "homepage": "https://github.com/syuria27/third-project#readme"
+  "homepage": "https://github.com/syuria27/third-project#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "cors": "^2.8.3",
+    "express": "^4.15.3",
+    "isset": "^1.0.3",
+    "md5": "^2.2.1",
+    "moment": "^2.18.1",
+    "morgan": "^1.8.1",
+    "mysql": "^2.13.0",
+    "pad-left": "^2.1.0",
+    "spdy": "^3.4.7"
+  }
 }
