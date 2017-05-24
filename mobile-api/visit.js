@@ -220,12 +220,12 @@ VISIT_ROUTER.prototype.handleRoutes= function(router,pool) {
 			                		var tgl = rows[0].tgl;
 			                		var datetime = tgl+' '+jam_masuk;
 									var query = `UPDATE visit SET 
-												jam_pulang = CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'),lokasi_pulang = ? 
-												selisih = TIMESTAMPDIFF(MINUTE,CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'),?)
+												jam_pulang = CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'),lokasi_pulang = ?, 
+												selisih = TIMESTAMPDIFF(MINUTE,?,CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'))
 												WHERE kode_visit = ?`;
 									var table = [req.body.lokasi, datetime, kode_visit];
 								    query = mysql.format(query,table);
-								    pool.getConnection(function(err,connection){
+									pool.getConnection(function(err,connection){
 			    						connection.query(query,function(err,results){
 									   		connection.release();
 	            							if(err) {
