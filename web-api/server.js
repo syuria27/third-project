@@ -5,8 +5,11 @@ var mysql = require("mysql");
 var bodyParser = require("body-parser");
 
 const login = require("./login.js");
-const visit = require("./visit.js");
+const user = require("./user.js");
 const product = require("./product.js");
+const pdf = require("./pdf.js");
+const visit = require("./visit.js");
+const sales = require("./sales.js");
 
 var app = express();
 
@@ -32,15 +35,18 @@ REST.prototype.connectMysql = function () {
 REST.prototype.configureExpress = function (pool) {
     var self = this;
     app.use(cors());
-    app.use(morgan("combined"));
-    app.use('/selfie', express.static('upload'));
-    app.use(bodyParser.urlencoded({ limit: "50mb",extended: true }));
+    app.use(morgan("combined"))
+    app.use(bodyParser.urlencoded({ limit: "50mb",extended: true, parameterLimit: 1000000 }));
     app.use(bodyParser.json({limit: "50mb"}));
+    app.use('/pdf', express.static('uploads'));
     var router = express.Router();
     app.use('/api', router);
     var login_router = new login(router, pool);
-    var visit_router = new visit(router, pool);
+    var sales_router = new sales(router, pool);
+    var user_router = new user(router, pool);
     var product_router = new product(router,pool);
+    var pdf_router = new pdf(router);
+    var visit_router = new visit(router, pool);
     // Handle 404 - Keep this as a last route
     app.use(function (req, res, next) {
         res.status(400);
@@ -50,8 +56,8 @@ REST.prototype.configureExpress = function (pool) {
 }
 
 REST.prototype.startServer = function () {
-    app.listen(3002, function () {
-        console.log("All right ! I am alive at Port 3002.");
+    app.listen(3003, function () {
+        console.log("All right ! I am alive at Port 3003.");
     });
 }
 

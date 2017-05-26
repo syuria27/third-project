@@ -1,6 +1,7 @@
 /mobile-api/node_modules
 /.vscode
 /mobile-api/upload
+/web-api/uploads
 /web-api/node_modules
 /web-api/.vscode
 /mobile-api/.vscode

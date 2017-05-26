@@ -136,7 +136,7 @@ VISIT_ROUTER.prototype.handleRoutes= function(router,pool) {
 			                	} else {
 			                		res.status(400);
 	                                data.error = true;
-	                                data.error_msg = 'Visit pulang first..';
+	                                data.error_msg = 'Visit pulang dahulu..';
 	                                res.json(data);
 			                	}
 						    }else{
@@ -212,7 +212,7 @@ VISIT_ROUTER.prototype.handleRoutes= function(router,pool) {
 			                	if (rows[0].jam_pulang !== null) {
 			                		res.status(400);
 	                                data.error = true;
-	                                data.error_msg = 'Visit datang first..';
+	                                data.error_msg = 'Visit datang dahulu..';
 	                                res.json(data);
 			                	} else {
 			                		var kode_visit = rows[0].kode_visit;
@@ -247,7 +247,7 @@ VISIT_ROUTER.prototype.handleRoutes= function(router,pool) {
 						    }else{
 						    	res.status(400);
 	                            data.error = true;
-	                            data.error_msg = 'Visit datang first..';
+	                            data.error_msg = 'Visit datang dahulu..';
 	                            res.json(data);
 					        }
 			            }
