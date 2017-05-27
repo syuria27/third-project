@@ -1,5 +1,4 @@
 var mysql = require("mysql");
-var moment = require('moment');
 const isset = require('isset');
 var fs = require( 'fs' );
 var pad = require('pad-left');

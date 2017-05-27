@@ -1,19 +1,19 @@
 var mysql = require("mysql");
 
-function PRODUCT_ROUTER(router, pool) {
+function NOTIFICATION_ROUTER(router, pool) {
     var self = this;
     self.handleRoutes(router, pool);
 }
 
-PRODUCT_ROUTER.prototype.handleRoutes = function (router, pool) {
+NOTIFICATION_ROUTER.prototype.handleRoutes = function (router, pool) {
 
-    router.get("/products", function (req, res) {
+    router.get("/notif", function (req, res) {
         var data = {
             error: true,
             error_msg: ""
         };
 
-        var query = `SELECT * FROM product where status = 1`;
+        var query = `SELECT judul, description FROM notification`;
         pool.getConnection(function (err, connection) {
             connection.query(query, function (err, rows) {
                 connection.release();
@@ -26,11 +26,11 @@ PRODUCT_ROUTER.prototype.handleRoutes = function (router, pool) {
                         res.status(200);
                         data.error = false;
                         data.error_msg = 'Success..';
-                        data.products = rows;
+                        data.notifications = rows;
                         res.json(data);
                     } else {
                         res.status(404);
-                        data.error_msg = 'No product Found..';
+                        data.error_msg = 'No Notification Found..';
                         res.json(data);
                     }
                 }
@@ -39,4 +39,4 @@ PRODUCT_ROUTER.prototype.handleRoutes = function (router, pool) {
     });
 }
 
-module.exports = PRODUCT_ROUTER;
+module.exports = NOTIFICATION_ROUTER;

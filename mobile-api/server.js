@@ -7,6 +7,7 @@ var bodyParser = require("body-parser");
 const login = require("./login.js");
 const visit = require("./visit.js");
 const product = require("./product.js");
+const notif = require("./notification");
 
 var app = express();
 
@@ -41,6 +42,7 @@ REST.prototype.configureExpress = function (pool) {
     var login_router = new login(router, pool);
     var visit_router = new visit(router, pool);
     var product_router = new product(router,pool);
+    var notif_router = new notif(router,pool);
     // Handle 404 - Keep this as a last route
     app.use(function (req, res, next) {
         res.status(400);

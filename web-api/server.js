@@ -8,6 +8,7 @@ const login = require("./login.js");
 const user = require("./user.js");
 const product = require("./product.js");
 const pdf = require("./pdf.js");
+const fcm = require("./fcm.js");
 const visit = require("./visit.js");
 const sales = require("./sales.js");
 
@@ -46,6 +47,7 @@ REST.prototype.configureExpress = function (pool) {
     var user_router = new user(router, pool);
     var product_router = new product(router,pool);
     var pdf_router = new pdf(router);
+    var fcm_router = new fcm(router,pool);
     var visit_router = new visit(router, pool);
     // Handle 404 - Keep this as a last route
     app.use(function (req, res, next) {
