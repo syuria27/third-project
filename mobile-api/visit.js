@@ -95,10 +95,10 @@ VISIT_ROUTER.prototype.handleRoutes= function(router,pool) {
 			            } else {
 			                if(rows.length > 0){
 			                	if (rows[0].jam_pulang !== null) {
-			                		var query = `INSERT INTO visit (kode_sales, nama_toko, tanggal, jam_masuk, lokasi_masuk, lokasi_pulang) 
+			                		var query = `INSERT INTO visit (kode_sales, nama_toko, tanggal, jam_masuk, lokasi_masuk) 
 							    				VALUES(?, ?, CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'), 
-							    				CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'), ?, ?)`;
-						        	var table = [req.body.kode_sales, req.body.nama_toko, req.body.lokasi, req.body.lokasi];
+							    				CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'), ?)`;
+						        	var table = [req.body.kode_sales, req.body.nama_toko, req.body.lokasi];
 					        		query = mysql.format(query,table);
 					        		pool.getConnection(function(err,connection){
 				    					connection.query(query,function(err,results){
@@ -139,10 +139,10 @@ VISIT_ROUTER.prototype.handleRoutes= function(router,pool) {
 	                                res.json(data);
 			                	}
 						    }else{
-						    	var query = `INSERT INTO visit (kode_sales, nama_toko, tanggal, jam_masuk, lokasi_masuk, lokasi_pulang) 
+						    	var query = `INSERT INTO visit (kode_sales, nama_toko, tanggal, jam_masuk, lokasi_masuk) 
 						    				VALUES(?, ?, CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'), 
-						    				CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'), ?, ?)`;
-					        	var table = [req.body.kode_sales, req.body.nama_toko, req.body.lokasi, req.body.lokasi];
+						    				CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'), ?)`;
+					        	var table = [req.body.kode_sales, req.body.nama_toko, req.body.lokasi];
 				        		query = mysql.format(query,table);
 				        		pool.getConnection(function(err,connection){
 			    					connection.query(query,function(err,results){
@@ -193,8 +193,7 @@ VISIT_ROUTER.prototype.handleRoutes= function(router,pool) {
 
 		if (isset(req.body.kode_sales) && isset(req.body.nama_toko)
 		 && isset(req.body.lokasi) && isset(req.body.photo)) {
-	        	var query = `SELECT *, DATE_FORMAT(tanggal, '%Y-%m-%d') as tgl
-	        				FROM visit WHERE kode_sales = ? AND tanggal 
+	        	var query = `SELECT * FROM visit WHERE kode_sales = ? AND tanggal 
 	        				= DATE(CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'))
 	        				ORDER BY id DESC LIMIT 1`;
 	        	var table = [req.body.kode_sales];
@@ -216,13 +215,14 @@ VISIT_ROUTER.prototype.handleRoutes= function(router,pool) {
 			                	} else {
 			                		var kode_visit = rows[0].kode_visit;
 			                		var jam_masuk = rows[0].jam_masuk;
-			                		var tgl = rows[0].tgl;
+			                		var lokasi = rows[0].lokasi_masuk;
+									var tgl = rows[0].tanggal;
 			                		var datetime = tgl+' '+jam_masuk;
 									var query = `UPDATE visit SET 
-												jam_pulang = CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'), 
+												jam_pulang = CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'), lokasi_pulang = ?,
 												selisih = TIMESTAMPDIFF(MINUTE,?,CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'))
 												WHERE kode_visit = ?`;
-									var table = [datetime, kode_visit];
+									var table = [lokasi,datetime, kode_visit];
 								    query = mysql.format(query,table);
 									pool.getConnection(function(err,connection){
 			    						connection.query(query,function(err,results){
