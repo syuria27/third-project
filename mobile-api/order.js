@@ -1,6 +1,21 @@
 var mysql = require("mysql");
 const isset = require('isset');
 const pad = require('pad-left');
+var replaceall = require("replaceall");
+const nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    secure: false,
+    port: 25,
+    auth: {
+        user: 'order.sal35@gmail.com',
+        pass: 'NipponPaint1010#'
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+});
 
 function ORDER_ROUTER(router, pool) {
     var self = this;
@@ -15,7 +30,7 @@ ORDER_ROUTER.prototype.handleRoutes = function (router, pool) {
             error_msg: ""
         };
 
-        if (isset(req.body.kode_sales) && isset(req.body.nama_toko)
+        if (isset(req.body.kode_sales) && isset(req.body.nama_sales) && isset(req.body.nama_toko)
              && isset(req.body.kode_sap) && isset(req.body.message)) {
             
             var query = `SELECT id FROM sales_order WHERE kode_sales = ? AND kode_sap = ?
@@ -61,10 +76,55 @@ ORDER_ROUTER.prototype.handleRoutes = function (router, pool) {
                                                     data.error_msg = "Error executing MySQL query";
                                                     res.json(data);
                                                 } else {
-                                                    res.status(200);
-                                                    data.error = false;
-                                                    data.error_msg = 'Order succesfuly submited..';
-                                                    res.json(data);
+                                                    var message = replaceall('\n','<br>',req.body.message);
+                                                    var mailOptions = {
+                                                        from: 'Order Sales <order.sal35@gmail.com>',
+                                                        to: 'syukron.tkj2@gmail.com',
+                                                        subject: kode_report,
+                                                        html: `<p>Admin Order,</p>
+                                                                <p>You have product order from sales.</p>
+                                                                <table>
+                                                                    <tr>
+                                                                        <td>Kode Order</td>
+                                                                        <td> : </td>
+                                                                        <td>${kode_report}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Requestor</td>
+                                                                        <td> : </td>
+                                                                        <td>${req.body.nama_sales}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Nama Toko</td>
+                                                                        <td> : </td>
+                                                                        <td>${req.body.nama_toko}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Kode SAP</td>
+                                                                        <td> : </td>
+                                                                        <td>${req.body.kode_sap}</td>
+                                                                    </tr>
+                                                                </table>
+                                                                <p>Message (Order) :</p>
+                                                                <p>${message}</p>
+                                                                <p>Thanks,<br>Sales App</p>`
+                                                    };
+
+                                                    transporter.sendMail(mailOptions,(err,info)=> {
+                                                        if (err) {
+                                                            console.log(err);
+                                                            res.status(200);
+                                                            data.error = false;
+                                                            data.error_msg = 'Order succesfuly submited..';
+                                                            res.json(data);
+                                                        } else {
+                                                            console.log('Email sent sucessfuly..');
+                                                            res.status(200);
+                                                            data.error = false;
+                                                            data.error_msg = 'Order succesfuly sent..';
+                                                            res.json(data);
+                                                        }
+                                                    });
                                                 }
                                             });
                                         });
@@ -89,7 +149,7 @@ ORDER_ROUTER.prototype.handleRoutes = function (router, pool) {
         };
 
         var query = `SELECT kode_order,DATE_FORMAT(tanggal, '%d-%m-%Y')
-                    as tanggal, nama_toko, kode_sap, message
+                    as tanggal, nama_toko, kode_sap, message, status
         			FROM sales_order WHERE kode_sales = ? AND tanggal = ?`;
         var table = [req.params.kode_sales, req.params.tanggal];
         query = mysql.format(query, table);
