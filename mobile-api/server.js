@@ -9,6 +9,7 @@ const visit = require("./visit.js");
 const product = require("./product.js");
 const notif = require("./notification");
 const order = require("./order");
+const crm = require("./crm");
 
 var app = express();
 
@@ -45,6 +46,7 @@ REST.prototype.configureExpress = function (pool) {
     var product_router = new product(router,pool);
     var notif_router = new notif(router,pool);
     var order_router = new order(router,pool);
+    var crm_router = new crm(router,pool);
     // Handle 404 - Keep this as a last route
     app.use(function (req, res, next) {
         res.status(400);
