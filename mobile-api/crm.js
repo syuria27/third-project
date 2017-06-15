@@ -69,8 +69,8 @@ CRM_ROUTER.prototype.handleRoutes = (router, pool) => {
                             res.json(data);
                         } else {
                             query = `INSERT INTO sales_crm (kode_sales,tanggal,nama_toko,
-                                    nama_pemilik,alamat,omset_nippon,any_competitor) 
-                                    VALUES (?,CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'),?,?,?,?,?)`;
+                                    nama_pemilik,alamat,omset_nippon,any_competitor) VALUES
+                                    (?,CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'),UPPER(?),?,?,?,?)`;
                             table = [req.body.kode_sales, req.body.nama_toko, req.body.pemilik,
                                     req.body.alamat, req.body.omset_nippon, req.body.any_competitors];
                             query = mysql.format(query,table);
