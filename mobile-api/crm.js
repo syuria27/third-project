@@ -30,7 +30,7 @@ CRM_ROUTER.prototype.handleRoutes = (router, pool) => {
                         res.status(200);
                         data.error = false;
                         data.error_msg = 'Success..';
-                        data.products = rows;
+                        data.competitors = rows;
                         res.json(data);
                     } else {
                         res.status(404);
