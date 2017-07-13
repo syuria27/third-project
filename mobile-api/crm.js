@@ -49,11 +49,11 @@ CRM_ROUTER.prototype.handleRoutes = (router, pool) => {
         };
 
         if (isset(req.body.kode_sales) && isset(req.body.nama_toko) && isset(req.body.pemilik)
-            && isset(req.body.alamat)  && isset(req.body.any_competitors)
-            && isset(req.body.omset_nippon) && isset(req.body.competitors)) {
-            var query = `SELECT id FROM sales_crm WHERE kode_sales = ? AND nama_toko = UPPER(?)
+            && isset(req.body.alamat) && isset(req.body.any_competitors) && isset(req.body.kode_sap)
+            && isset(req.body.mesin_nippon) && isset(req.body.omset_nippon) && isset(req.body.competitors)) {
+            var query = `SELECT id FROM sales_crm WHERE kode_sales = ? AND kode_sap = ?
                          AND tanggal = DATE(CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'))`;
-            var table = [req.body.kode_sales, req.body.nama_toko];
+            var table = [req.body.kode_sales, req.body.kode_sap];
             query = mysql.format(query, table);
             pool.getConnection((err, connection) => {
                 connection.query(query, (err, rows) => {
@@ -68,11 +68,11 @@ CRM_ROUTER.prototype.handleRoutes = (router, pool) => {
                             data.error_msg = 'CRM Already Submited..';
                             res.json(data);
                         } else {
-                            query = `INSERT INTO sales_crm (kode_sales,tanggal,nama_toko,
-                                    nama_pemilik,alamat,omset_nippon,any_competitor) VALUES
-                                    (?,CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'),UPPER(?),?,?,?,?)`;
-                            table = [req.body.kode_sales, req.body.nama_toko, req.body.pemilik,
-                                    req.body.alamat, req.body.omset_nippon, req.body.any_competitors];
+                            query = `INSERT INTO sales_crm (kode_sales,tanggal,nama_toko,kode_sap,
+                                    nama_pemilik,alamat,mesin_nippon,omset_nippon,any_competitor) VALUES
+                                    (?,CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'),UPPER(?),?,?,?,?,?,?)`;
+                            table = [req.body.kode_sales, req.body.nama_toko, req.body.kode_sap, req.body.pemilik,
+                                    req.body.alamat, req.body.mesin_nippon, req.body.omset_nippon, req.body.any_competitors];
                             query = mysql.format(query,table);
                             pool.getConnection((err,connection) => {
                                 console.log(query);
@@ -110,12 +110,13 @@ CRM_ROUTER.prototype.handleRoutes = (router, pool) => {
 
                                                         for (var i in jsonArr) {
                                                             var kode_competitor = jsonArr[i]['kode_competitor'];
+                                                            var mesin = jsonArr[i]['mesin'];
                                                             var omset = jsonArr[i]['omset'];
-                                                            inserts.push([kode_crm, tanggal, kode_competitor, omset]);
+                                                            inserts.push([kode_crm, tanggal, kode_competitor, mesin, omset]);
                                                         }
 
-                                                        var query = `INSERT INTO omset_competitor (kode_crm, 
-                                                                    tanggal, kode_competitor, omset) VALUES ?`;
+                                                        var query = `INSERT INTO omset_competitor (kode_crm, tanggal,
+                                                                     kode_competitor, mesin, omset) VALUES ?`;
                                                         var table = [inserts];
                                                         query = mysql.format(query, table);
                                                         pool.getConnection((err, connection) => {
