@@ -153,15 +153,15 @@ CRM_ROUTER.prototype.handleRoutes = (router, pool) => {
         }
     });
 
-    router.get("/crm/:kode_sales/:tanggal/:nama_toko", (req, res) => {
+    router.get("/crm/:kode_sales/:tanggal/:kode_sap", (req, res) => {
         var data = {
             error: true,
             error_msg: ""
         };
 
-        var query = `SELECT kode_crm,nama_toko,nama_pemilik,alamat,omset_nippon,any_competitor
-                    FROM sales_crm WHERE kode_sales = ? AND tanggal = ? AND nama_toko = UPPER(?)`;
-        var table = [req.params.kode_sales, req.params.tanggal, req.params.nama_toko];
+        var query = `SELECT kode_crm,nama_toko,nama_pemilik,alamat,mesin_nippon,omset_nippon,any_competitor
+                    FROM sales_crm WHERE kode_sales = ? AND tanggal = ? AND kode_sap = ?`;
+        var table = [req.params.kode_sales, req.params.tanggal, req.params.kode_sap];
         query = mysql.format(query, table);
         pool.getConnection((err, connection) => {
             connection.query(query, (err, rows) => {
@@ -180,7 +180,7 @@ CRM_ROUTER.prototype.handleRoutes = (router, pool) => {
                             data.history = history;
                             res.json(data);    
                         } else {
-                            query = `SELECT nama_competitor, omset FROM omset_competitor oc LEFT JOIN
+                            query = `SELECT nama_competitor, mesin, omset FROM omset_competitor oc LEFT JOIN
                                     competitor c ON c.kode_competitor = oc.kode_competitor WHERE kode_crm = ?`;
                             table = [rows[0].kode_crm];
                             query = mysql.format(query,table);
