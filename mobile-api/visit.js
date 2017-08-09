@@ -193,7 +193,8 @@ VISIT_ROUTER.prototype.handleRoutes= function(router,pool) {
 
 		if (isset(req.body.kode_sales) && isset(req.body.nama_toko)
 		 && isset(req.body.lokasi) && isset(req.body.photo)) {
-	        	var query = `SELECT * FROM visit WHERE kode_sales = ? AND tanggal 
+				var query = `SELECT *, DATE_FORMAT(tanggal, '%Y-%m-%d') as tgl
+							FROM visit WHERE kode_sales = ? AND tanggal 
 	        				= DATE(CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'))
 	        				ORDER BY id DESC LIMIT 1`;
 	        	var table = [req.body.kode_sales];
@@ -216,7 +217,7 @@ VISIT_ROUTER.prototype.handleRoutes= function(router,pool) {
 			                		var kode_visit = rows[0].kode_visit;
 			                		var jam_masuk = rows[0].jam_masuk;
 			                		var lokasi = rows[0].lokasi_masuk;
-									var tgl = rows[0].tanggal;
+									var tgl = rows[0].tgl;
 			                		var datetime = tgl+' '+jam_masuk;
 									var query = `UPDATE visit SET 
 												jam_pulang = CONVERT_TZ(NOW(),@@session.time_zone,'+07:00'), lokasi_pulang = ?,
