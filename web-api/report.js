@@ -14,11 +14,11 @@ REPORT_ROUTER.prototype.handleRoutes = function (router, pool) {
             crm: []
         };
 
-        var query = `SELECT sr.kode_report, sr.kode_sales, u.nama_sales, u.depot, 
-                    DATE_FORMAT(sr.tanggal, '%d-%m-%Y') AS tanggal,
-                    sr.nama_toko, sr.kode_sap, sr.alamat, sr.keterangan 
-                    FROM sales_report sr LEFT JOIN user u ON sr.kode_sales = u.kode_sales 
-                    WHERE sr.kode_sales = ? AND MONTH(sr.tanggal) = ? AND YEAR(sr.tanggal) = ?`;
+        var query = `SELECT kode_report,
+                    DATE_FORMAT(tanggal, '%d-%m-%Y') AS tanggal,
+                    nama_toko, kode_sap, alamat, keterangan 
+                    FROM sales_report 
+                    WHERE kode_sales = ? AND MONTH(tanggal) = ? AND YEAR(tanggal) = ?`;
         var table = [req.params.kode_sales, req.params.bulan, req.params.tahun];
         query = mysql.format(query, table);
         pool.getConnection(function (err, connection) {
