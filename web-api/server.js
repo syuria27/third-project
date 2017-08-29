@@ -11,6 +11,8 @@ const pdf = require("./pdf.js");
 const fcm = require("./fcm.js");
 const visit = require("./visit.js");
 const sales = require("./sales.js");
+const crm = require("./crm.js");
+const report = require("./report.js");
 
 var app = express();
 
@@ -24,7 +26,7 @@ REST.prototype.connectMysql = function () {
     var pool = mysql.createPool({
         connectionLimit: 50,
         waitForConnection: true,
-        host: 'localhost',
+        host: 'npspgmanagement.co.id',
         user: 'root',
         password: 'npspg2017',
         database: 'npsales',
@@ -49,6 +51,8 @@ REST.prototype.configureExpress = function (pool) {
     var pdf_router = new pdf(router);
     var fcm_router = new fcm(router,pool);
     var visit_router = new visit(router, pool);
+    var crm_router = new crm(router,pool);
+    var report_router = new report(router,pool);
     // Handle 404 - Keep this as a last route
     app.use(function (req, res, next) {
         res.status(400);

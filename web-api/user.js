@@ -16,11 +16,11 @@ USER_ROUTER.prototype.handleRoutes = function (router, pool) {
             error_msg: ""
         };
 
-        if (isset(req.body.nama_sales) && isset(req.body.depot) && isset(req.body.hak_akses)) {
+        if (isset(req.body.nama_sales) && isset(req.body.depot) && isset(req.body.kode_sap) && isset(req.body.hak_akses)) {
 
-            var query = `INSERT INTO user (nama_sales, depot) 
-                        VALUES (UPPER(?), UPPER(TRIM(?)))`;
-            var table = [req.body.nama_sales, req.body.depot];
+            var query = `INSERT INTO user (nama_sales, depot, kode_sap) 
+                        VALUES (UPPER(?), UPPER(TRIM(?)), ?)`;
+            var table = [req.body.nama_sales, req.body.depot, req.body.kode_sap];
             query = mysql.format(query, table);
             pool.getConnection(function (err, connection) {
                 if (err) console.log(err);
@@ -81,9 +81,9 @@ USER_ROUTER.prototype.handleRoutes = function (router, pool) {
             error_msg: ""
         };
 
-        if (isset(req.body.kode_sales) && isset(req.body.nama_sales) && isset(req.body.depot)) {
-            var query = `UPDATE user SET nama_sales = UPPER(?), depot = UPPER(TRIM(?)) WHERE kode_sales = ?`;
-            var table = [req.body.nama_sales, req.body.depot, req.body.kode_sales];
+        if (isset(req.body.kode_sales) && isset(req.body.nama_sales) && isset(req.body.depot) && isset(req.body.kode_sap)) {
+            var query = `UPDATE user SET nama_sales = UPPER(?), depot = UPPER(TRIM(?)), kode_sap = ? WHERE kode_sales = ?`;
+            var table = [req.body.nama_sales, req.body.depot, req.body.kode_sap, req.body.kode_sales];
             query = mysql.format(query, table);
             pool.getConnection(function (err, connection) {
                 connection.query(query, function (err) {
@@ -178,7 +178,7 @@ USER_ROUTER.prototype.handleRoutes = function (router, pool) {
             users: []
         };
 
-        var query = `SELECT u.kode_sales, nama_sales, depot, status, hak_akses
+        var query = `SELECT u.kode_sales, nama_sales, depot, kode_sap, status, hak_akses
                      FROM user u LEFT JOIN login l ON u.kode_sales = l.kode_sales WHERE hak_akses < 3`;
         query = mysql.format(query);
         pool.getConnection(function (err, connection) {
@@ -213,7 +213,7 @@ USER_ROUTER.prototype.handleRoutes = function (router, pool) {
             user: []
         };
 
-        var query = `SELECT u.kode_sales, nama_sales, depot, status, hak_akses
+        var query = `SELECT u.kode_sales, nama_sales, depot, kode_sap, status, hak_akses
                      FROM user u LEFT JOIN login l ON u.kode_sales = l.kode_sales
                      WHERE u.kode_sales = ?`;
         var table = [req.params.kode_sales];
