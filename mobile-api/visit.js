@@ -10,7 +10,39 @@ function VISIT_ROUTER(router,pool) {
 
 VISIT_ROUTER.prototype.handleRoutes= function(router,pool) {
     
-    router.get('/visit/pulang/:kode_sales/:tanggal',function(req,res){
+    router.get('/visit/:kode_sales/:tanggal',function(req,res){
+    	var data = { error:true,
+			    	 error_msg:'' };
+
+        var query = `SELECT kode_visit,nama_toko, DATE_FORMAT(tanggal, '%d-%m-%Y') as tanggal,
+        			lokasi_masuk,jam_masuk,jam_pulang FROM visit WHERE kode_sales = ? AND tanggal = ? `;
+        var table = [req.params.kode_sales,req.params.tanggal];
+        query = mysql.format(query,table);
+        pool.getConnection(function(err,connection){
+		    connection.query(query,function(err,rows){
+	            connection.release();
+	            if(err) {
+	                res.status(500);
+                    data.error_msg = 'Error executing MySQL query';
+                    res.json(data);
+	            } else {
+	            	if(rows.length != 0){
+	            		res.status(200);
+	                	data.error = false;
+				        data.error_msg = 'Success..';
+				        data.history = rows;
+				        res.json(data);
+			        }else{
+			        	res.status(404);
+			            data.error_msg = 'No History Found..';
+			            res.json(data);
+			        }
+	            }
+	        });
+	    });
+    });
+
+	router.get('/visit/pulang/:kode_sales/:tanggal',function(req,res){
     	var data = { error:true,
 			    	 error_msg:'' };
 
@@ -40,8 +72,8 @@ VISIT_ROUTER.prototype.handleRoutes= function(router,pool) {
 	            }
 	        });
 	    });
-    });
-
+	});
+	
     router.get('/visit/masuk/:kode_sales/:tanggal',function(req,res){
     	var data = { error:true,
 			    	 error_msg:'' };
