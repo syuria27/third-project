@@ -15,9 +15,9 @@ SALES_ROUTER.prototype.handleRoutes = function (router, pool) {
         };
 
         if (req.params.depot === "ADMIN") {
-            var query = `SELECT kode_sales, nama_sales, depot FROM user`;
+            var query = `SELECT kode_sales, kode_sap, nama_sales, depot FROM user`;
         } else {
-            var query = `SELECT kode_sales, nama_sales, depot FROM user WHERE depot = ?`;
+            var query = `SELECT kode_sales, kode_sap, nama_sales, depot FROM user WHERE depot = ?`;
         }
 
 
@@ -56,11 +56,11 @@ SALES_ROUTER.prototype.handleRoutes = function (router, pool) {
         };
 
         if (req.params.depot === "ADMIN") {
-            var query = `SELECT kode_sales, nama_sales, depot
+            var query = `SELECT kode_sales, kode_sap, nama_sales, depot
         			FROM user WHERE kode_sales = ?`;
             var table = [req.params.kode_sales];
         } else {
-            var query = `SELECT kode_sales, nama_sales, depot
+            var query = `SELECT kode_sales, kode_sap, nama_sales, depot
         			FROM user WHERE kode_sales = ? AND depot = ?`;
             var table = [req.params.kode_sales, req.params.depot];
         }
