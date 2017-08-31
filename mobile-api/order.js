@@ -10,7 +10,7 @@ var transporter = nodemailer.createTransport({
     port: 25,
     auth: {
         user: 'order.sal35@gmail.com',
-        pass: 'NipponPaint1010#'
+        pass: 'NipponPaint1010$'
     },
     tls: {
         rejectUnauthorized: false
@@ -31,7 +31,7 @@ ORDER_ROUTER.prototype.handleRoutes = function (router, pool) {
         };
 
         if (isset(req.body.kode_sales) && isset(req.body.nama_sales) && isset(req.body.nama_toko)
-             && isset(req.body.kode_sap) && isset(req.body.message)) {
+             && isset(req.body.kode_sap) && isset(req.body.message) && isset(req.body.depot)) {
             
             var query = `SELECT id FROM sales_order WHERE kode_sales = ? AND kode_sap = ?
                          AND tanggal = DATE(CONVERT_TZ(CURDATE(),@@session.time_zone,'+07:00'))`;
@@ -76,54 +76,72 @@ ORDER_ROUTER.prototype.handleRoutes = function (router, pool) {
                                                     data.error_msg = "Error executing MySQL query";
                                                     res.json(data);
                                                 } else {
-                                                    var message = replaceall('\n','<br>',req.body.message);
-                                                    var mailOptions = {
-                                                        from: 'Order Sales <order.sal35@gmail.com>',
-                                                        to: 'syukron.tkj2@gmail.com',
-                                                        subject: kode_report,
-                                                        html: `<p>Admin Order,</p>
-                                                                <p>You have product order from sales.</p>
-                                                                <table>
-                                                                    <tr>
-                                                                        <td>Kode Order</td>
-                                                                        <td> : </td>
-                                                                        <td>${kode_report}</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Requestor</td>
-                                                                        <td> : </td>
-                                                                        <td>${req.body.nama_sales}</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Nama Toko</td>
-                                                                        <td> : </td>
-                                                                        <td>${req.body.nama_toko}</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Kode SAP</td>
-                                                                        <td> : </td>
-                                                                        <td>${req.body.kode_sap}</td>
-                                                                    </tr>
-                                                                </table>
-                                                                <p>Message (Order) :</p>
-                                                                <p>${message}</p>
-                                                                <p>Thanks,<br>Sales App</p>`
-                                                    };
-
-                                                    transporter.sendMail(mailOptions,(err,info)=> {
-                                                        if (err) {
-                                                            console.log(err);
-                                                            res.status(200);
-                                                            data.error = false;
-                                                            data.error_msg = 'Order succesfuly submited..';
-                                                            res.json(data);
-                                                        } else {
-                                                            console.log('Email sent sucessfuly..');
-                                                            res.status(200);
-                                                            data.error = false;
-                                                            data.error_msg = 'Order succesfuly sent..';
-                                                            res.json(data);
-                                                        }
+                                                    var query = 'SELECT email FROM email_order WHERE depot = ?';
+                                                    var table = [req.body.depot];
+                                                    query = mysql.format(query,table);
+                                                    pool.getConnection((err, connection) => {
+                                                        connection.query(query, (err, rows) => {
+                                                            connection.release();
+                                                            var email;
+                                                            if(err) {
+                                                                email = 'error@gmail.com';
+                                                            } else if (rows.length > 0){
+                                                                email = rows[0].email;
+                                                                console.log(email);
+                                                            } else {
+                                                                email = 'notfound@gmail.com'
+                                                            }
+                                                            var message = replaceall('\n','<br>',req.body.message);
+                                                            console.log(email);
+                                                            var mailOptions = {
+                                                                from: 'Order Sales <order.sal35@gmail.com>',
+                                                                to: email,
+                                                                subject: kode_report,
+                                                                html: `<p>Admin Order,</p>
+                                                                        <p>You have product order from sales.</p>
+                                                                        <table>
+                                                                            <tr>
+                                                                                <td>Kode Order</td>
+                                                                                <td> : </td>
+                                                                                <td>${kode_report}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>Requestor</td>
+                                                                                <td> : </td>
+                                                                                <td>${req.body.nama_sales}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>Nama Toko</td>
+                                                                                <td> : </td>
+                                                                                <td>${req.body.nama_toko}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>Kode SAP</td>
+                                                                                <td> : </td>
+                                                                                <td>${req.body.kode_sap}</td>
+                                                                            </tr>
+                                                                        </table>
+                                                                        <p>Message (Order) :</p>
+                                                                        <p>${message}</p>
+                                                                        <p>Thanks,<br>Sales App</p>`
+                                                            };
+        
+                                                            transporter.sendMail(mailOptions,(err,info)=> {
+                                                                if (err) {
+                                                                    console.log(err);
+                                                                    res.status(200);
+                                                                    data.error = false;
+                                                                    data.error_msg = 'Order succesfuly submited..';
+                                                                    res.json(data);
+                                                                } else {
+                                                                    console.log('Email sent sucessfuly..');
+                                                                    res.status(200);
+                                                                    data.error = false;
+                                                                    data.error_msg = 'Order succesfuly sent..';
+                                                                    res.json(data);
+                                                                }
+                                                            });
+                                                        })
                                                     });
                                                 }
                                             });
