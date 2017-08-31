@@ -84,12 +84,12 @@ ORDER_ROUTER.prototype.handleRoutes = function (router, pool) {
                                                             connection.release();
                                                             var email;
                                                             if(err) {
-                                                                email = 'error@gmail.com';
+                                                                email = 'pratiwibotindi12@gmail.com';
                                                             } else if (rows.length > 0){
                                                                 email = rows[0].email;
                                                                 console.log(email);
                                                             } else {
-                                                                email = 'notfound@gmail.com'
+                                                                email = 'pratiwibotindi12@gmail.com'
                                                             }
                                                             var message = replaceall('\n','<br>',req.body.message);
                                                             console.log(email);
