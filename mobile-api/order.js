@@ -31,7 +31,7 @@ ORDER_ROUTER.prototype.handleRoutes = function (router, pool) {
         };
 
         if (isset(req.body.kode_sales) && isset(req.body.nama_sales) && isset(req.body.nama_toko)
-             && isset(req.body.kode_sap) && isset(req.body.message) && isset(req.body.depot)) {
+             && isset(req.body.kode_sap) && isset(req.body.message)) {
             
             var query = `SELECT id FROM sales_order WHERE kode_sales = ? AND kode_sap = ?
                          AND tanggal = DATE(CONVERT_TZ(CURDATE(),@@session.time_zone,'+07:00'))`;
@@ -77,7 +77,11 @@ ORDER_ROUTER.prototype.handleRoutes = function (router, pool) {
                                                     res.json(data);
                                                 } else {
                                                     var query = 'SELECT email FROM email_order WHERE depot = ?';
-                                                    var table = [req.body.depot];
+                                                    var nm = req.body.nama_sales;
+                                                    var depot1 = nm.substring(nm.indexOf('(')+1);
+                                                    var depot = depot1.substring(0,depot1.indexOf(')'))
+                                                    console.log(depot);
+                                                    var table = [depot];
                                                     query = mysql.format(query,table);
                                                     pool.getConnection((err, connection) => {
                                                         connection.query(query, (err, rows) => {
