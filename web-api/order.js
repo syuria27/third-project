@@ -79,7 +79,7 @@ ORDER_ROUTER.prototype.handleRoutes = function (router, pool) {
                         res.status(200);
                         res.json(data);
                     } else {
-                        data.error_msg = 'No Absen Found..';
+                        data.error_msg = 'No Order Found..';
                         res.status(404);
                         res.json(data);
                     }
