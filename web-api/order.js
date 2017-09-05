@@ -15,7 +15,8 @@ ORDER_ROUTER.prototype.handleRoutes = function (router, pool) {
             order: {}
         };
 
-        var query = `SELECT REPLACE(message,'\n','<br>') as message FROM sales_order WHERE kode_order = ?`;
+        var query = `SELECT DATE_FORMAT(tanggal, '%d-%m-%Y') as tanggal, nama_toko, kode_sap, 
+                    REPLACE(message,'\n','<br>') as message FROM sales_order WHERE kode_order = ?`;
         var table = [req.params.kode_order];
         query = mysql.format(query, table);
         pool.getConnection(function (err, connection) {
