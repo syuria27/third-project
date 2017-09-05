@@ -15,7 +15,7 @@ ORDER_ROUTER.prototype.handleRoutes = function (router, pool) {
             order: {}
         };
 
-        var query = `SELECT message FROM sales_order WHERE kode_order = ?`;
+        var query = `SELECT REPLACE(message,'\n','<br>') FROM sales_order WHERE kode_order = ?`;
         var table = [req.params.kode_order];
         query = mysql.format(query, table);
         pool.getConnection(function (err, connection) {
