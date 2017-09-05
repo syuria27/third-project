@@ -13,6 +13,7 @@ const visit = require("./visit.js");
 const sales = require("./sales.js");
 const crm = require("./crm.js");
 const report = require("./report.js");
+const email = require("./email.js");
 
 var app = express();
 
@@ -53,6 +54,7 @@ REST.prototype.configureExpress = function (pool) {
     var visit_router = new visit(router, pool);
     var crm_router = new crm(router,pool);
     var report_router = new report(router,pool);
+    var email_router = new email(router,pool);
     // Handle 404 - Keep this as a last route
     app.use(function (req, res, next) {
         res.status(400);
