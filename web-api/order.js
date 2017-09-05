@@ -75,7 +75,7 @@ ORDER_ROUTER.prototype.handleRoutes = function (router, pool) {
                     if (rows.length > 0) {
                         data.error = false;
                         data.error_msg = 'Success..';
-                        data.order.rows;
+                        data.order = rows;
                         res.status(200);
                         res.json(data);
                     } else {
