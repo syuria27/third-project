@@ -7,13 +7,15 @@ function NOTIFICATION_ROUTER(router, pool) {
 
 NOTIFICATION_ROUTER.prototype.handleRoutes = function (router, pool) {
 
-    router.get("/notif", function (req, res) {
+    router.get("/notif/:depot", function (req, res) {
         var data = {
             error: true,
             error_msg: ""
         };
 
-        var query = `SELECT judul, description FROM notification`;
+        var query = `SELECT judul, description FROM notification WHERE depot = ?`;
+        var table = [req.params.depot];
+        query = mysql.format(query, table);
         pool.getConnection(function (err, connection) {
             connection.query(query, function (err, rows) {
                 connection.release();
