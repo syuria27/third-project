@@ -13,7 +13,7 @@ NOTIFICATION_ROUTER.prototype.handleRoutes = function (router, pool) {
             error_msg: ""
         };
 
-        var query = `SELECT judul, description FROM notification WHERE depot = ?`;
+        var query = `SELECT judul, description FROM notification WHERE depot = ? OR depot = 'ADMIN'`;
         var table = [req.params.depot];
         query = mysql.format(query, table);
         pool.getConnection(function (err, connection) {
