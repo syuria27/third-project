@@ -22,11 +22,15 @@ FCM_ROUTER.prototype.handleRoutes = function (router,pool) {
             error_msg: ""
         };
 
-        if (isset(req.body.judul) && isset(req.body.short_desc) && isset(req.body.description)) {
+        if (isset(req.body.judul) && isset(req.body.short_desc)
+             && isset(req.body.description) && isset(req.body.depot)) {
 
-            var query = `INSERT INTO notification (tanggal, judul, short_desc, description)
-                         VALUES (NOW(),?,?,?)`;
-            var table = [req.body.judul, req.body.short_desc, req.body.description];
+            var query = `INSERT INTO notification 
+                        (tanggal, judul, short_desc, 
+                        description, depot)
+                         VALUES (NOW(),?,?,?,?)`;
+            var table = [req.body.judul, req.body.short_desc, 
+                        req.body.description, req.body.depot];
             query = mysql.format(query, table);
             pool.getConnection(function (err, connection) {
                 if (err) console.log(err);
@@ -37,32 +41,38 @@ FCM_ROUTER.prototype.handleRoutes = function (router,pool) {
                         data.error_msg = "Error executing MySQL query";
                         res.json(data);
                     } else {
-                        var message = {
-                            to: '/topics/all',
-                            
-                            notification: {
-                                title: req.body.judul,
-                                body: req.body.short_desc,
-                                icon: 'ic_notifications_black_24dp',
-                                sound: 'defaultSoundUri'
-                            },
+                        if (req.body.depot != 'ADMIN'){
+                            res.status(200);
+                            data.error_msg = "Success submit notification";
+                            res.json(data);
+                        }else {
+                            var message = {
+                                to: '/topics/all',
+                                
+                                notification: {
+                                    title: req.body.judul,
+                                    body: req.body.short_desc,
+                                    icon: 'ic_notifications_black_24dp',
+                                    sound: 'defaultSoundUri'
+                                },
 
-                        }
-
-                        fcm.send(message, function (err, response) {
-                            if (err) {
-                                console.log(err)
-                                res.status(500);
-                                data.error_msg = "Fail sand notification";
-                                res.json(data);
-                            } else {
-                                res.status(200);
-                                data.error = false;
-                                data.error_msg = 'Success sand notification..';
-                                data.kode_notification = response.messageId;
-                                res.json(data);
                             }
-                        })
+
+                            fcm.send(message, function (err, response) {
+                                if (err) {
+                                    console.log(err)
+                                    res.status(200);
+                                    data.error_msg = "Success submit notification";
+                                    res.json(data);
+                                } else {
+                                    res.status(200);
+                                    data.error = false;
+                                    data.error_msg = 'Success sand notification..';
+                                    data.kode_notification = response.messageId;
+                                    res.json(data);
+                                }
+                            });
+                        }
                     }
                 });
             });
