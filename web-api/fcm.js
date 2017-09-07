@@ -41,38 +41,32 @@ FCM_ROUTER.prototype.handleRoutes = function (router,pool) {
                         data.error_msg = "Error executing MySQL query";
                         res.json(data);
                     } else {
-                        if (req.body.depot != 'ADMIN'){
-                            res.status(200);
-                            data.error_msg = "Success submit notification";
-                            res.json(data);
-                        }else {
-                            var message = {
-                                to: '/topics/all',
+                        var message = {
+                            to: '/topics/'+req.body.depot,
                                 
-                                notification: {
-                                    title: req.body.judul,
-                                    body: req.body.short_desc,
-                                    icon: 'ic_notifications_black_24dp',
-                                    sound: 'defaultSoundUri'
-                                },
+                            notification: {
+                                title: req.body.judul,
+                                body: req.body.short_desc,
+                                icon: 'ic_notifications_black_24dp',
+                                sound: 'defaultSoundUri'
+                            },
 
-                            }
-
-                            fcm.send(message, function (err, response) {
-                                if (err) {
-                                    console.log(err)
-                                    res.status(200);
-                                    data.error_msg = "Success submit notification";
-                                    res.json(data);
-                                } else {
-                                    res.status(200);
-                                    data.error = false;
-                                    data.error_msg = 'Success sand notification..';
-                                    data.kode_notification = response.messageId;
-                                    res.json(data);
-                                }
-                            });
                         }
+
+                        fcm.send(message, function (err, response) {
+                            if (err) {
+                                console.log(err)
+                                res.status(200);
+                                data.error_msg = "Success submit notification";
+                                res.json(data);
+                            } else {
+                                res.status(200);
+                                data.error = false;
+                                data.error_msg = 'Success sand notification..';
+                                data.kode_notification = response.messageId;
+                                res.json(data);
+                            }
+                        });
                     }
                 });
             });
